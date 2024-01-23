@@ -2,10 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\PatientType;
 use App\Filament\Resources\PatientResource\Pages;
 use App\Filament\Resources\PatientResource\RelationManagers;
 use App\Models\Patient;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -23,7 +27,34 @@ class PatientResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
+                Select::make('type')
+                    ->options(PatientType::class)
+                    ->required(),
+                DatePicker::make('date_of_birth')
+                    ->required()
+                    ->maxDate(now()),
+                Select::make('owner_id')
+                    ->relationship('owner', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('email')
+                            ->label('Email address')
+                            ->email()
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('phone')
+                            ->label('Phone number')
+                            ->tel()
+                            ->required(),
+                    ])
+                    ->required(),
             ]);
     }
 
