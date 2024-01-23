@@ -7,9 +7,6 @@ use App\Filament\Resources\PatientResource\Pages;
 use App\Filament\Resources\PatientResource\RelationManagers;
 use App\Models\Patient;
 use Filament\Forms;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -27,29 +24,29 @@ class PatientResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
+                Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Select::make('type')
+                Forms\Components\Select::make('type')
                     ->options(PatientType::class)
                     ->required(),
-                DatePicker::make('date_of_birth')
+                Forms\Components\DatePicker::make('date_of_birth')
                     ->required()
                     ->maxDate(now()),
-                Select::make('owner_id')
+                Forms\Components\Select::make('owner_id')
                     ->relationship('owner', 'name')
                     ->searchable()
                     ->preload()
                     ->createOptionForm([
-                        TextInput::make('name')
+                        Forms\Components\TextInput::make('name')
                             ->required()
                             ->maxLength(255),
-                        TextInput::make('email')
+                        Forms\Components\TextInput::make('email')
                             ->label('Email address')
                             ->email()
                             ->required()
                             ->maxLength(255),
-                        TextInput::make('phone')
+                        Forms\Components\TextInput::make('phone')
                             ->label('Phone number')
                             ->tel()
                             ->required(),
@@ -62,10 +59,19 @@ class PatientResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('type'),
+                Tables\Columns\TextColumn::make('date_of_birth')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('owner.name')
+                    ->searchable()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('type')
+                    ->options(PatientType::class),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
